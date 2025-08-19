@@ -1,0 +1,505 @@
+openapi: 3.0.4
+info:
+  title: Swagger Travel Social Network App - OpenAPI 3.0
+  description: |-
+    This is a Travel Social Network App based on the OpenAPI 3.0 specification.
+  version: 0.1.0
+tags:
+  - name: travel_notes
+  - name: comments
+  - name: subscriptions
+  - name: rates
+  - name: search
+paths:
+  /travelnotes:
+    post:
+      tags:
+        - travel_notes
+      summary: Add a new travel note.
+      description: Add a new travel note.
+      requestBody:
+        required: true
+        description: Create a new travel note
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelNote'
+
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelNote'
+        '400':
+          description: Bad Request
+        '500':
+          description: Server error
+    
+    get:
+      tags:
+        - travel_notes
+      summary: Get list of travel notes by filters
+      description: Get list of travel notes by filters
+      parameters:
+        - name: userId
+          in: query
+          description: user id to filter by
+          required: true
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TravelNote'
+
+        '400':
+          description: Bad request
+        '422':
+          description: Validation exception
+        '500':
+          description: Server error
+
+      
+  
+  /travelnotes/{travelNoteId}:
+    put:
+      tags:
+        - travel_notes
+      summary: Update an existing travel note.
+      description: Update an existing travel note by Id.
+      parameters:
+        - name: travelNoteId
+          in: path
+          description: ID of travel note to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        description: Update an existent travel note
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: title of travel onte
+                content:
+                  type: string
+                  description: content
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelNote'
+
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '422':
+          description: Validation exception
+        '500':
+          description: Server error
+    
+    get:
+      tags:
+        - travel_notes
+      summary: Get travel note.
+      description: Get travel note by Id.
+      parameters:
+        - name: travelNoteId
+          in: path
+          description: ID of travel note to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+  
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelNote'
+
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+  
+  /comments/{travelNoteId}:
+    get:
+      tags:
+        - comments
+      summary: Get comments to travel note.
+      description: Get comments to travel note.
+      parameters:
+        - name: travelNoteId
+          in: path
+          description: ID of travel note to return comemnts for
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+    
+    post:
+      tags:
+        - comments
+      summary: Creates comment for travel note.
+      description: Creates comment for travel note.
+      parameters:
+        - name: travelNoteId
+          in: path
+          description: ID of travel note to return comemnts for
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        description: Create comment for travel note
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                travelNoteId:
+                  type: integer
+                  format: int64
+                  description: ID of travel note
+                user_id:
+                  type: integer
+                  format: int64
+                  description: ID of user leaving comment
+                content:
+                  type: string
+                  description: comment text
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '400':
+          description: Bad request
+        '500':
+          description: Server error
+  
+  /subscriptions:
+    post:
+      tags:
+        - subscriptions
+      summary: Creates subscription for a user.
+      description: Creates subscription for a user.
+      requestBody:
+        required: true
+        description: Create comment for travel note
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                author_id:
+                  type: integer
+                  format: int64
+                  description: ID of travel note' author
+                followerId:
+                  type: integer
+                  format: int64
+                  description: ID of follower
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad request
+        '500':
+          description: Server error
+  
+  /subscriptions/{authorId}:
+    get:
+      tags:
+        - subscriptions
+      summary: Get list of user followers.
+      description: Get list of user followers.
+      parameters:
+        - name: authorId
+          in: path
+          description: ID of user with followers
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+  
+  /travelnotes/{travelNoteId}/rates:
+    post:
+      tags:
+        - rates
+      summary: Adds to travel note score.
+      description: Adds to travel note score.
+      parameters:
+        - name: travelNoteId
+          in: path
+          description: ID of travel note
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        description: Adds to travel note score.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                score:
+                  type: integer
+                  format: int64
+                  description: score
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+  
+    get:
+      tags:
+        - rates
+      summary: Get travel note score.
+      description: Get travel note score.
+      parameters:
+        - name: travelNoteId
+          in: path
+          description: ID of travel note
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rate'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+
+  /search:
+    get:
+      tags:
+        - search
+      summary: Finds travel notes.
+      description: Finds travel notes.
+      parameters:
+        - name: q
+          in: query
+          description: filter text
+          required: true
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TravelNote'
+
+        '400':
+          description: Bad request
+        '500':
+          description: Server error
+  
+  /travelnotes/{travelNoteId}/image:
+    post:
+      tags:
+        - travel_notes
+      summary: Uploads an image.
+      description: Upload image.
+      parameters:
+        - name: travelNoteId
+          in: path
+          description: ID of travel note to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+ 
+components:
+  schemas:
+    TravelNote:
+      type: object
+      required:
+        - id
+        - userId
+        - title
+        - contents
+        - photoUrls
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        userId:
+          type: integer
+          format: int64
+          example: 198772
+        title:
+          type: string
+        contents:
+          type: string
+        photoUrls:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Comment:
+      type: object
+      required:
+        - id
+        - postId
+        - userId
+        - contents
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        postId:
+          type: integer
+          format: int64
+          example: 1
+        userId:
+          type: integer
+          format: int64
+          example: 1
+        content:
+          type: string
+          example: Dogs
+        createdAt:
+          type: string
+          format: date-time
+
+    Subscription:
+      type: object
+      required:
+        - authorId
+        - followerIds
+      properties:
+        authorId:
+          type: integer
+          format: int64
+          example: 10
+        follower_ids:
+          type: array
+          items:
+            type: integer
+            example: 10, 20, 30
+
+    Rate:
+      type: object
+      required:
+        - postId
+        - score
+      properties:
+        postId:
+          type: integer
+          format: int64
+        score:
+          type: integer
+          format: int64
+
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+

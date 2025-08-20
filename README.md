@@ -36,7 +36,9 @@ Designing a mega cool social network app
   * Оценки:
     * Добавление оценки - 10 оценок / день (половина DAU оценивает посты)
   * Подписка:
-    * На двух пользователей в день
+    * Подписка на 1 пользователя в день
+    * Просмотр списка своих подписчиков - в среднем 1 раз в день. По 20 подписчиков в выдаче.
+    * Просмотр списка авторов, на кого сам подписан - в среднем 1 раз в день. По 20 авторов в выдаче.
   * Поиск:
     * Два запроса в минуту
     * 50 постов в выдаче (Заголовок + часть описания)
@@ -79,8 +81,9 @@ Designing a mega cool social network app
   * score:  32 bytes (это сумма. Приходит 8 байт в запросе)
 
 * Подписка:
-  * author_id  8 bytes
-  * follower_ids [...]
+  * following_id  8 bytes
+  * follower_id 8 bytes
+  * created_at: 8 bytes
 
 * Пользователь:
   * id: 8 bytes
@@ -102,7 +105,7 @@ Designing a mega cool social network app
     * C(фото) = 66Mb * 86400 * 365 = 2081376000Mb = 2081Tb
 * Комментарии:
   * RPS: 
-    * RPS(r) = 10 000 000 * 200 / 86400 = 2314
+    * RPS(r) = 10 000 000 * 10* 20 / 86400 = 2314
     * RPS(w) = 10 000 000 / 2 * 20 / 86400 = 1157
   * Трафик:
     * Traffic(w) = 1157 * 3Kb = 3471Kb (3.5Mb)
@@ -120,13 +123,13 @@ Designing a mega cool social network app
     * C = 9.3Kb * 86400 * 365 = 293284800Kb = 300Gb
 * Подписки:
   * RPS: 
-    * RPS(w) = 10 000 000 / = 
-    * RPS(r) = 10 000 000  = 
+    * RPS(w) = 10 000 000 * 1 / 86400 = 116
+    * RPS(r) = 10 000 000 * 1 * 20 / 86400  = 2314
   * Трафик:
-    * Traffic(w) = 579 * 16b = 9264b (9.3Kb)
-    * Traffic(r) = 1157 * 40b = 46280b (46.3Kb)
+    * Traffic(w) = 116 * 24b = 2784b (2.8Kb)
+    * Traffic(r) = 2314 * 24b = 55536b (55.5Kb)
   * Capacity:
-    * C = 9.3Kb * 86400 * 365 = 293284800Kb = 300Gb
+    * C = 2.8Kb * 86400 * 365 = 88300800Kb = 88Gb
 * Поиск:
   * RPS:
     * RPS(r) = 10 000 000 * 2 / 60 = 333333
@@ -173,5 +176,9 @@ Designing a mega cool social network app
   * Disks = max(ceil(Disks_for_capacity), ceil(Disks_for_throughput), ceil(Disks_for_iops)) = 2 
 
 * Подписки
+  * Disks_for_iops = iops / disk_iops = 2430 / 1000 = 3 disks
+  * Disks_for_throughput = traffic_per_second / disk_throughput = 0.059Mb / 500Mb/s = 1
+  * Disks_for_capacity = capacity / disk_capacity = 110Tb / 100Tb = 0.09Tb / 100Tb = 1
+  * Disks = max(ceil(Disks_for_capacity), ceil(Disks_for_throughput), ceil(Disks_for_iops)) = ...
 
 * Пользователи

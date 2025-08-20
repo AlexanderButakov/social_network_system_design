@@ -81,7 +81,7 @@ Designing a mega cool social network app
   * score:  32 bytes (это сумма. Приходит 8 байт в запросе)
 
 * Подписка:
-  * following_id  8 bytes
+  * followed_id  8 bytes
   * follower_id 8 bytes
   * created_at: 8 bytes
 

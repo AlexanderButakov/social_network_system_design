@@ -79,8 +79,13 @@ Designing a mega cool social network app
   * score:  32 bytes (это сумма. Приходит 8 байт в запросе)
 
 * Подписка:
-  * author_id
+  * author_id  8 bytes
   * follower_ids [...]
+
+* Пользователь:
+  * id: 8 bytes
+  * username: 20 bytes
+  * created_at: 8 bytes
 
 ## Расчет нагрузки:
 * Посты:
@@ -92,20 +97,36 @@ Designing a mega cool social network app
     * Traffic(w текст) = 17 * 5550 = 94.35Kb
     * Traffic(w фото) = 165 * 400000 = 66Mb
     * Traffic(r) = 1157 * (66Mb + 94.35Kb) = 76.5Gb
+  * Capacity:
+    * C(текст) = 94.35Kb * 86400 * 365 = 2975421600Kb = 3Tb
+    * C(фото) = 66Mb * 86400 * 365 = 2081376000Mb = 2081Tb
 * Комментарии:
   * RPS: 
     * RPS(r) = 10 000 000 * 200 / 86400 = 2314
     * RPS(w) = 10 000 000 / 2 * 20 / 86400 = 1157
   * Трафик:
-    * Traffic(w) = 1157 * 3Kb = 3508024 (3.5Mb)
-    * Traffic(r) = 2314 * 3Kb * 20 = 139Kb
+    * Traffic(w) = 1157 * 3Kb = 3471Kb (3.5Mb)
+    * Traffic(r) = 2314 * 3Kb * 20 = 138840Kb (139Mb)
+  * Capacity:
+    * C = 3.5Mb * 86400 * 365 = 110376000Mb = 110Tb
 * Оценки:
   * RPS: 
     * RPS(w) = 10 000 000 / 2 * 10 / 86400 = 579
     * RPS(r) = 10 000 000 * 10 / 86400 = 1157
   * Трафик:
-    * Traffic(w) = 579 * 16b = 9264 (9.3Kb)
+    * Traffic(w) = 579 * 16b = 9264b (9.3Kb)
     * Traffic(r) = 1157 * 40b = 46280b (46.3Kb)
+  * Capacity:
+    * C = 9.3Kb * 86400 * 365 = 293284800Kb = 300Gb
+* Подписки:
+  * RPS: 
+    * RPS(w) = 10 000 000 / = 
+    * RPS(r) = 10 000 000  = 
+  * Трафик:
+    * Traffic(w) = 579 * 16b = 9264b (9.3Kb)
+    * Traffic(r) = 1157 * 40b = 46280b (46.3Kb)
+  * Capacity:
+    * C = 9.3Kb * 86400 * 365 = 293284800Kb = 300Gb
 * Поиск:
   * RPS:
     * RPS(r) = 10 000 000 * 2 / 60 = 333333
@@ -124,3 +145,33 @@ Designing a mega cool social network app
 
 ### Количество соединений
 * 10000000 * 0.1 = 1000000
+
+
+### Количество дисков для хранения информации
+* Посты (без фото) SSD (sata)
+  * Disks_for_iops = iops / disk_iops = (1157 + 17) / 1000 = 2 disks 
+  * Disks_for_throughput = traffic_per_second / disk_throughput = 110Mb / 500Mb/s = 1 disk
+  * Disks_for_capacity = capacity / disk_capacity = 3Tb / 100Tb = 1 disk
+  * Disks = max(ceil(Disks_for_capacity), ceil(Disks_for_throughput), ceil(Disks_for_iops)) = 2
+
+* Фото SSD(sata)
+  * Disks_for_iops = iops / disk_iops = 1322 / 1000 = 2 disks
+  * Disks_for_throughput = traffic_per_second / disk_throughput = 76428Mb / 500Mb/s = 153 disks
+  * Disks_for_capacity = capacity / disk_capacity = 2081Tb / 100Tb = 21 disks
+  * Disks = max(ceil(Disks_for_capacity), ceil(Disks_for_throughput), ceil(Disks_for_iops)) = 153 
+
+* Комментарии SSD (sata)
+  * Disks_for_iops = iops / disk_iops = 3417 / 1000 = 4 disks
+  * Disks_for_throughput = traffic_per_second / disk_throughput = 143Mb / 500Mb/s = 1 disk
+  * Disks_for_capacity = capacity / disk_capacity = 110Tb / 100Tb = 2 disks
+  * Disks = max(ceil(Disks_for_capacity), ceil(Disks_for_throughput), ceil(Disks_for_iops)) = 4 
+
+* Оценки
+  * Disks_for_iops = iops / disk_iops = 1736 / 1000 = 2 disks
+  * Disks_for_throughput = traffic_per_second / disk_throughput = 0.056Mb / 500Mb/s = 1
+  * Disks_for_capacity = capacity / disk_capacity = 110Tb / 100Tb = 0.3Tb / 100Tb = 1
+  * Disks = max(ceil(Disks_for_capacity), ceil(Disks_for_throughput), ceil(Disks_for_iops)) = 2 
+
+* Подписки
+
+* Пользователи

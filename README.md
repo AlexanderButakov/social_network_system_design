@@ -169,16 +169,43 @@ Designing a mega cool social network app
   * Disks_for_capacity = capacity / disk_capacity = 110Tb / 100Tb = 2 disks
   * Disks = max(ceil(Disks_for_capacity), ceil(Disks_for_throughput), ceil(Disks_for_iops)) = 4 
 
-* Оценки
+* Оценки SSD (sata)
   * Disks_for_iops = iops / disk_iops = 1736 / 1000 = 2 disks
   * Disks_for_throughput = traffic_per_second / disk_throughput = 0.056Mb / 500Mb/s = 1
   * Disks_for_capacity = capacity / disk_capacity = 110Tb / 100Tb = 0.3Tb / 100Tb = 1
   * Disks = max(ceil(Disks_for_capacity), ceil(Disks_for_throughput), ceil(Disks_for_iops)) = 2 
 
-* Подписки
+* Подписки SSD (sata)
   * Disks_for_iops = iops / disk_iops = 2430 / 1000 = 3 disks
   * Disks_for_throughput = traffic_per_second / disk_throughput = 0.059Mb / 500Mb/s = 1
   * Disks_for_capacity = capacity / disk_capacity = 110Tb / 100Tb = 0.09Tb / 100Tb = 1
   * Disks = max(ceil(Disks_for_capacity), ceil(Disks_for_throughput), ceil(Disks_for_iops)) = ...
 
 * Пользователи
+  * ...
+
+### Количество хостов, шарды, репликация
+* Посты
+  * Храним в PostgreSQL
+    * master-slave репликация, async синхронизация, RF = 2
+    * шардирование по hash(user_id)
+    * Hosts = disks / disks_per_host = 2 / 1 = 2
+    * Hosts with replication = hosts * replication_factor = 2 * 2 = 4 (4 disks)
+* Комментарии
+  * Храним в PostgreSQL
+    * master-slave репликация, async синхронизация, RF = 2
+    * шардирование по hash(post_id)
+    * Hosts = disks / disks_per_host = 4 / 2 = 2
+    * Hosts with replication = hosts * replication_factor = 2 * 2 = 4 (8 disks)
+* Оценки
+  * Храним в PostgreSQL
+    * master-slave репликация, async синхронизация, RF = 2
+    * шардирование по hash(post_id)
+    * Hosts (shards) = disks / disks_per_host = 2 / 1 = 2
+    * Hosts with replication = hosts * replication_factor = 2 * 2 = 4 (4 disks)
+* Подписки
+  * Храним в PostgreSQL
+    * master-slave репликация, async синхронизация, RF = 2
+    * шардирование по hash(followed_id)
+    * Hosts (shards) = disks / disks_per_host = 1 / 1 = 1
+    * Hosts with replication = hosts * replication_factor = 1 * 2 = 2 (2 disks)
